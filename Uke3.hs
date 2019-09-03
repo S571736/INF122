@@ -15,6 +15,6 @@ toList 0 = []
 toList x = toList(x `div` 10) ++ [x `mod` 10]
 
 ab :: String -> Bool
+tell str = filter (flip elem "ab") str
 
-ab [] = []
-ab x:xs = 
+ab [] = False

@@ -8,5 +8,4 @@ fjerde = ([False, True], ['0', '1']) -- ([Bool], [Char])
 femte = [tail, tail, reverse] -- [[a] -> [a]]
 
 -- 3.2
-bools :: [Bool]
-bools [b] = [b]
+ptrue = [True, False]
