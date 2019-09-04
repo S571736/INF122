@@ -1,4 +1,12 @@
 -- Uke 3
+-- A
+-- 4.3
+safetail :: Eq a => [a] -> [a]
+safetail xs = 
+if xs == [] 
+    then [] 
+    else tail xs
+
 -- B
 f :: Int -> Int
 f 0 = 0
@@ -16,5 +24,13 @@ toList x = toList(x `div` 10) ++ [x `mod` 10]
 
 ab :: String -> Bool
 tell str = filter (flip elem "ab") str
+tella str = length $ filter (=='a') str
+tellb str = length $ filter (=='b') str
 
-ab [] = False
+
+ab (x:xs) = do
+    let a = 0 + tella [x]
+    let b = 0 + tellb [x]
+    if a >= b
+        then ab xs
+        else False
