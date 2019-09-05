@@ -30,3 +30,21 @@ og False _ = False
 og True x = x
 
 ptrue = [True, False]
+
+-- Funksjon lignende til Uke 3 D
+
+aab st = okk st []
+okk [] as = True
+okk ('a':xs) as == okk xs ('a':as)
+okk ('b':xs) [] = False
+okk ('b':xs) (a:as) = okk xs as
+okk (x:xs) as = okk xs as
+
+-- Muligens heilt lik oppgava, om det er forskjell 
+ab st = ok st []
+ok [] [] = True
+ok [] as = False
+ok ('a':xs) as = ok xs ('a':as)
+ok ('b':xs) [] = False
+ok ('b':xs) (a:as) = ok xs as
+ok (x:xs) as = ok xs as
