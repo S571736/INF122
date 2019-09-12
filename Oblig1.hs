@@ -6,16 +6,21 @@ module Oblig1 where
     
     fjern :: String -> Int -> String
 
-
+    fjern str n = 
+        let s = take (n) str
+            e = drop (n+1) str
+            in s ++ e
 
 {- A. (b) Programmer funksjon fjernc som fjerner fra strengen i første 
 argumentet alle forekomster av tegnet i andre argumentet-}
     fjernc :: String -> Char -> String
 
+    fjernc str c = [x | x <- str, not (c `elem` str)]
+
 
 {-A.(c) Programmer funksjon tegnpos som returnerer liste med alle 
 posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
-    tegnpos :: String -> Char -> [Int]
+    --tegnpos :: String -> Char -> [Int]
 
 
 {-B.(a) Programmer funksjon tokenize
@@ -34,12 +39,12 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
     > tokenize “a + b* 12–def”   “+*”   “ “ (den siste er strengen med enkelt blank) skal gi 
         [“a”, ”+”, ”b”, ”*”, ”12–def”]-}
 
-    tokenize :: String -> String -> String -> [String]
+    --tokenize :: String -> String -> String -> [String]
 
 {-C. I denne oppgaven betrakter vi lister som mengder, dvs. vi ser bort fra rekkefølgen og repetisjoner av elementer
     - [1,3,1,2,1,3] og [3,2,1] betraktes som like-}
 
-    eqli :: Eq t => [t] -> [t] -> Bool
+    --eqli :: Eq t => [t] -> [t] -> Bool
 
 {-D. programmer funksjon sjekk som tar som input en streng med mulige parantesuttrykk, og sjekker om paranteser er riktig.
     Er de det, returneres strengen "Korrekt", mens er det feil, returneres strengen "Feil".
@@ -47,4 +52,4 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
     Paranteser må matches kun mot paranteser med samme type. f.eks skal strengen "({)}" avvises fordi innerste "{" har tilsvarende 
     ")" istedenfor "}". Utenom paranteser, kan man ha vilkårlige tegn i strenger, f.eks skal "abc( de {a} jjjj)[x]" aksepteres.-}
 
-    sjekk :: String -> String
+    --sjekk :: String -> String
