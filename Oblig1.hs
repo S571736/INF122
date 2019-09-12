@@ -27,7 +27,11 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
 
 {-B.(a) Programmer funksjonen ord som deler inputstrengen opp i liste av strenger ved hver sekvens av mellomrom-}
     ord :: String -> [String]
-    ord str = []
+    ord "" = []
+    ord str = 
+        let s  = takeWhile (/=' ') $ dropWhile (==' ') str
+            (_, rest) = splitAt (length s) str
+        in s : ord (dropWhile (==' ') rest)
 
 {-B.(b) Programmer funksjon tokenize
 >tokenize str imp rem skal dele opp strengen str i en liste ac strenger der
