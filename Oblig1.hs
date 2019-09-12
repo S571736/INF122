@@ -15,15 +15,21 @@ module Oblig1 where
 argumentet alle forekomster av tegnet i andre argumentet-}
     fjernc :: String -> Char -> String
 
-    fjernc str c = [x | x <- str, not (c `elem` str)]
+    fjernc str c = filter(/=c) str
 
 
 {-A.(c) Programmer funksjon tegnpos som returnerer liste med alle 
 posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
-    --tegnpos :: String -> Char -> [Int]
+    tegnpos :: String -> Char -> [Int]
+
+    tegnpos str c = [y | (x, y) <- zip str [0..], x == c]
 
 
-{-B.(a) Programmer funksjon tokenize
+{-B.(a) Programmer funksjonen ord som deler inputstrengen opp i liste av strenger ved hver sekvens av mellomrom-}
+    ord :: String -> [String]
+    ord str = []
+
+{-B.(b) Programmer funksjon tokenize
 >tokenize str imp rem skal dele opp strengen str i en liste ac strenger der
     - hvert tegn som forekommer i strengen imp skal stå som egen streng,
     - hvert tegn som forekommer i strengen rem skal fjernes, mens
@@ -40,6 +46,8 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
         [“a”, ”+”, ”b”, ”*”, ”12–def”]-}
 
     --tokenize :: String -> String -> String -> [String]
+
+
 
 {-C. I denne oppgaven betrakter vi lister som mengder, dvs. vi ser bort fra rekkefølgen og repetisjoner av elementer
     - [1,3,1,2,1,3] og [3,2,1] betraktes som like-}
