@@ -49,7 +49,7 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
     > tokenize “a + b* 12–def”   “+*”   “ “ (den siste er strengen med enkelt blank) skal gi 
         [“a”, ”+”, ”b”, ”*”, ”12–def”]-}
 
-    --tokenize :: String -> String -> String -> [String]
+    tokenize :: String -> String -> String -> [String]
 
 
 
