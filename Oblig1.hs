@@ -67,7 +67,16 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
 {-C. I denne oppgaven betrakter vi lister som mengder, dvs. vi ser bort fra rekkefølgen og repetisjoner av elementer
     - [1,3,1,2,1,3] og [3,2,1] betraktes som like-}
 
+    rmdup :: Eq a => [a] -> [a]
+    rmdup = rdHelp []
+        where rdHelp sett [] = sett
+              rdHelp sett (x:xs)
+                | x `elem` sett = rdHelp sett xs
+                |otherwise = rdHelp (sett ++ [x]) xs
+            
+
     eqli :: Eq t => [t] -> [t] -> Bool
+    eqli l1 l2= [t | x <- [0..(rmdup l1)], y <- [0..(rmdup l2)],]
 
 {-D. programmer funksjon sjekk som tar som input en streng med mulige parantesuttrykk, og sjekker om paranteser er riktig.
     Er de det, returneres strengen "Korrekt", mens er det feil, returneres strengen "Feil".
