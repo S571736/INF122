@@ -49,14 +49,25 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
     > tokenize “a + b* 12–def”   “+*”   “ “ (den siste er strengen med enkelt blank) skal gi 
         [“a”, ”+”, ”b”, ”*”, ”12–def”]-}
 
-    tokenize :: String -> String -> String -> [String]
+
+    tokenize :: [Char] -> [Char] ->String ->  [String]
+   
+    tokenize _ _ "" = []
+    tokenize imp rem (x:str)
+        | x `elem` rem                  = rest
+        | x `elem` imp                  = [x]:rest
+        | ([i:_]) <- rest, i `elem` imp = [x]:rest
+        | (voksende:rest') <- rest      = (x:voksende):rest'
+        | otherwise                     = [x]:rest
+        where rest = tokenize imp rem str
+
 
 
 
 {-C. I denne oppgaven betrakter vi lister som mengder, dvs. vi ser bort fra rekkefølgen og repetisjoner av elementer
     - [1,3,1,2,1,3] og [3,2,1] betraktes som like-}
 
-    --eqli :: Eq t => [t] -> [t] -> Bool
+    eqli :: Eq t => [t] -> [t] -> Bool
 
 {-D. programmer funksjon sjekk som tar som input en streng med mulige parantesuttrykk, og sjekker om paranteser er riktig.
     Er de det, returneres strengen "Korrekt", mens er det feil, returneres strengen "Feil".
