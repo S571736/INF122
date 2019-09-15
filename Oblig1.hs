@@ -50,7 +50,7 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
         [“a”, ”+”, ”b”, ”*”, ”12–def”]-}
 
 
-    tokenize :: [Char] -> [Char] ->String ->  [String]
+    tokenize :: [Char] -> [Char] -> String ->  [String]
    
     tokenize _ _ "" = []
     tokenize imp rem (x:str)
@@ -73,10 +73,23 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
               rdHelp sett (x:xs)
                 | x `elem` sett = rdHelp sett xs
                 |otherwise = rdHelp (sett ++ [x]) xs
+
+    
+    qs [] = []
+    qs (x:xs) = (qs mindre) ++ [x] ++ (qs storre)
+        where 
+            storre = [ i | i <- xs, i >= x ]
+            mindre = [ i | i <- xs, i < x ]
             
 
-    eqli :: Eq t => [t] -> [t] -> Bool
-    eqli l1 l2= [t | x <- [0..(rmdup l1)], y <- [0..(rmdup l2)],]
+    --eqli :: Eq t => [t] -> [t] -> Bool
+    eqli l1 l2= do
+        let li1 = rmdup l1
+        let li2 = rmdup l2
+        let lis1  = qs li1
+        let lis2  = qs li2
+        lis1 == lis2
+
 
 {-D. programmer funksjon sjekk som tar som input en streng med mulige parantesuttrykk, og sjekker om paranteser er riktig.
     Er de det, returneres strengen "Korrekt", mens er det feil, returneres strengen "Feil".
@@ -84,4 +97,12 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
     Paranteser må matches kun mot paranteser med samme type. f.eks skal strengen "({)}" avvises fordi innerste "{" har tilsvarende 
     ")" istedenfor "}". Utenom paranteser, kan man ha vilkårlige tegn i strenger, f.eks skal "abc( de {a} jjjj)[x]" aksepteres.-}
 
-    --sjekk :: String -> String
+    sjekk :: String -> String
+    sjekk xs = if testing xs then "Korrekt" else "False"
+    
+    
+    testing xs = head cumulated == 0 && all (>= 0) cumulated where
+        cumulated = scanr (+) 0 $ map depth xs
+        depth '(' = -1
+        depth ')' = 1
+        depth _ = 0
