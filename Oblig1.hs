@@ -66,7 +66,7 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
 
 {-C. I denne oppgaven betrakter vi lister som mengder, dvs. vi ser bort fra rekkefølgen og repetisjoner av elementer
     - [1,3,1,2,1,3] og [3,2,1] betraktes som like-}
-
+{-
     rmdup :: Eq a => [a] -> [a]
     rmdup = rdHelp []
         where rdHelp sett [] = sett
@@ -89,7 +89,22 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
         let lis1  = qs li1
         let lis2  = qs li2
         lis1 == lis2
+-}
 
+    eqli :: Eq t => [t] -> [t] -> Bool
+
+    eqli [] [] = True   
+    eqli a b = eqli2 (remDoubles a) (remDoubles b)
+    remDoubles [] = []
+    remDoubles (x:xs) | x elem xs = remDoubles xs
+                      | otherwise = x : remDoubles xs
+    eqli2 a b = if length a /= length b then False else checker a b
+
+    checker a b = check [(x,y) | (x,y) <- zip a b, x <- a, y <- b, x == y]
+
+    check a = check2 [x == y|(x,y) <- a]
+
+    check2 a = if all (== True) a then True else False
 
 {-D. programmer funksjon sjekk som tar som input en streng med mulige parantesuttrykk, og sjekker om paranteser er riktig.
     Er de det, returneres strengen "Korrekt", mens er det feil, returneres strengen "Feil".
