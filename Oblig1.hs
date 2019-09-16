@@ -66,7 +66,7 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
 
 {-C. I denne oppgaven betrakter vi lister som mengder, dvs. vi ser bort fra rekkefølgen og repetisjoner av elementer
     - [1,3,1,2,1,3] og [3,2,1] betraktes som like-}
-{-
+
     rmdup :: Eq a => [a] -> [a]
     rmdup = rdHelp []
         where rdHelp sett [] = sett
@@ -74,7 +74,7 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
                 | x `elem` sett = rdHelp sett xs
                 |otherwise = rdHelp (sett ++ [x]) xs
 
-    
+{-    
     qs [] = []
     qs (x:xs) = (qs mindre) ++ [x] ++ (qs storre)
         where 
@@ -94,10 +94,12 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
     eqli :: Eq t => [t] -> [t] -> Bool
 
     eqli [] [] = True   
-    eqli a b = eqli2 (remDoubles a) (remDoubles b)
+    eqli a b = eqli2 (rmdup a) (rmdup b)
+    {-
     remDoubles [] = []
     remDoubles (x:xs) | x elem xs = remDoubles xs
                       | otherwise = x : remDoubles xs
+    -}
     eqli2 a b = if length a /= length b then False else checker a b
 
     checker a b = check [(x,y) | (x,y) <- zip a b, x <- a, y <- b, x == y]
