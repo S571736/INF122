@@ -92,14 +92,9 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
 -}
 
     eqli :: Eq t => [t] -> [t] -> Bool
-
     eqli [] [] = True   
     eqli a b = eqli2 (rmdup a) (rmdup b)
-    {-
-    remDoubles [] = []
-    remDoubles (x:xs) | x elem xs = remDoubles xs
-                      | otherwise = x : remDoubles xs
-    -}
+    
     eqli2 a b = if length a /= length b then False else checker a b
 
     checker a b = check [(x,y) | (x,y) <- zip a b, x <- a, y <- b, x == y]
@@ -107,7 +102,11 @@ posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
     check a = check2 [x == y|(x,y) <- a]
 
     check2 a = if all (== True) a then True else False
-
+{-
+    remDoubles [] = []
+    remDoubles (x:xs) | x elem xs = remDoubles xs
+                      | otherwise = x : remDoubles xs
+    -}
 {-D. programmer funksjon sjekk som tar som input en streng med mulige parantesuttrykk, og sjekker om paranteser er riktig.
     Er de det, returneres strengen "Korrekt", mens er det feil, returneres strengen "Feil".
     Du kan først lage en løsning hvor kun paranteser ( og ) kan forekomme og, deretter, utvide den med parantespar [] og {}.
