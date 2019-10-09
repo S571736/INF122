@@ -4,29 +4,41 @@ module Oblig2 where
 
 import Data.Char
 
-data Ast = Tall Int | Sum Ast Ast | Mult Ast Ast | Min Ast |  Var String   deriving (Eq, Show)
+data Ast = Tall Int | Min Ast | Sum Ast Ast | Mult Ast Ast | Var String   deriving (Eq, Show)
 -- denne definisjonen av Ast utvides med manglende bitene for Mult og Min 
 
---parse :: String -> Ast
+parse :: String -> Ast
 
-parse str = parseE [str]
+parse str = getFirst (parseExpr (tokenize str "+*-" " "))
 
 onlyDigits x = takeWhile isDigit x == x
 
-parseE :: [String] -> (Ast, [String])
+parseExpr :: [String] -> (Ast, [String])
 
-parseE ("+":rs) = let(e1, r1) = parseE rs ;
-                     (e2, r2) = parseE r1 in (Sum e1 e2, r2)
+parseExpr ("+":rs) = let(e1, r1) = parseExpr rs ;
+                        (e2, r2) = parseExpr r1 in (Sum e1 e2, r2)
 
-parseE ("*":rs) = let(e1, r1) = parseE rs ;
-                     (e2, r2) = parseE r1 in (Mult e1 e2, r2)
+parseExpr ("*":rs) = let(e1, r1) = parseExpr rs ;
+                        (e2, r2) = parseExpr r1 in (Mult e1 e2, r2)
             
-parseE ("-":rs) = let(e1, r1) = parseE r1 in (Min e1, r1)
+parseExpr ("-":rs) = let(e1, r1) = parseExpr rs ; 
+                        (e2, r2) = parseExpr r1 in (Min e1, r2)
 
-parseE (x:rs) = if (onlyDigits x) then (Tall (read x :: Int), rs)
+parseExpr (x:rs) = if (onlyDigits x) then (Tall (read x :: Int), rs)
                         else error ("Syntaksfeil ved " ++ x)
-parseE ([]:rs) = []
-                        
+
+getFirst :: (a, b) -> a
+getFirst (a,b) = fst (a, b)
+
+tokenize :: [Char] -> [Char] -> String ->  [String]
+   
+tokenize [] t s = []
+tokenize (xr:xs) t s | elem xr t = [xr] : tokenize xs t s
+                    | elem xr s = tokenize xs t s
+                    | otherwise = (takeWhile (notin (t++s)) (xr:xs)) : tokenize
+                    (dropWhile (notin (t++s)) (xr:xs)) t s
+                    
+notin ls = \z -> not (elem z ls)
 
 
 viss :: Ast -> String
