@@ -41,9 +41,16 @@ tokenize (xr:xs) t s | elem xr t = [xr] : tokenize xs t s
 notin ls = \z -> not (elem z ls)
 
 
+
 viss :: Ast -> String
 
 viss ast = undefined
+--tar inn Ast
+--gjør om til String
+--må ha \n for å få til forskjellige linjer, kanskje ANSI for å flytte ut
+-- sammensmekking av evt fleire mindre strenger til the big boi
+--Sender til vis som bruker putStr
+
 
 vis :: Ast -> IO ()
 
