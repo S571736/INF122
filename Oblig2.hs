@@ -58,13 +58,25 @@ vis :: Ast -> IO ()
 
 vis ast = putStr (viss ast)
 
+
+--folde' :: (Int -> t) -> (t -> t -> t) -> (t -> t -> t) -> (t -> t) -> Ast -> a -> t
+folde' t s mul min (Tall x) = t x
+folde' t s mul min (Sum x y) = s (folde' t s mul min x) (folde' t s mul min y)
+folde' t s mul min (Mult x y) = mul (folde' t s mul min x) (folde' t s mul min y)
+folde' t s mul min (Min x) = min (folde' t s mul min x) 
+--folde' s u o e i (Ik x) = i (folde' s u o e i x)
+
+
 evi :: Ast -> Int
 
-evi str = undefined
+evi str = folde' (id) (+) (*) (negate) str
 
 evb :: Ast -> Bool
 
-evb str = undefined
+evb str = folde' (oddCheck) (||) (&&) (not) str
+
+
+oddCheck q = rem (abs(q)) 2 == 1
 
 evix :: Ast -> Int -> Int
 
