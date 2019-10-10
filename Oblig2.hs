@@ -44,7 +44,12 @@ notin ls = \z -> not (elem z ls)
 
 viss :: Ast -> String
 
-viss ast = undefined
+viss ast = do
+    streng <- show ast --Turns ast to String
+    tokenized <- tokenize streng "" "()" --tears String into list of strings
+    filth <- filter (not . null) tokenized --Removes empty string in list
+    ul <- unlines (tokenized)    --Puts string back together but with \n in it
+    return (ul)
 --tar inn Ast
 --gjør om til String
 --må ha \n for å få til forskjellige linjer, kanskje ANSI for å flytte ut
