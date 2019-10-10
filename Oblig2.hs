@@ -66,30 +66,27 @@ vis ast = putStr (viss ast)
 
 
 --folde' :: (Int -> t) -> (t -> t -> t) -> (t -> t -> t) -> (t -> t) -> Ast -> a -> t
-folde' t s mul min (Tall x) = t x
-folde' t s mul min (Sum x y) = s (folde' t s mul min x) (folde' t s mul min y)
-folde' t s mul min (Mult x y) = mul (folde' t s mul min x) (folde' t s mul min y)
-folde' t s mul min (Min x) = min (folde' t s mul min x) 
---folde' s u o e i (Ik x) = i (folde' s u o e i x)
+folde' t s mul min (Tall x) i = t x
+folde' t s mul min (Sum x y) i = s (folde' t s mul min x i) (folde' t s mul min y i)
+folde' t s mul min (Mult x y) i = mul (folde' t s mul min x i) (folde' t s mul min y i)
+folde' t s mul min (Min x) i = min (folde' t s mul min x i) 
+folde' t s mul min (Var x) i = t i
 
 
 evi :: Ast -> Int
 
-evi str = folde' (id) (+) (*) (negate) str
+evi str = folde' (id) (+) (*) (negate) str 0
 
 evb :: Ast -> Bool
 
-evb str = folde' (oddCheck) (||) (&&) (not) str
-
-oddCheck :: Integral a => a -> Bool
-oddCheck q = odd q
+evb str = folde' (odd) (||) (&&) (not) str 0
 
 evix :: Ast -> Int -> Int
 
-evix str i = undefined
+evix str i = folde' (id) (+) (*) (negate) str i
 
 evbx :: Ast -> Int -> Bool
 
-evbx str i = undefined
+evbx str i = folde' (odd) (||) (&&) (not) str i
 
 
