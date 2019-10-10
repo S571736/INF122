@@ -40,27 +40,18 @@ tokenize (xr:xs) t s | elem xr t = [xr] : tokenize xs t s
                     
 notin ls = \z -> not (elem z ls)
 
-tokStr s = tokenize (show s) "" "()"
+fkdInd :: String
+fkdInd = "   "
 
-fjernSpace [] = []
-fjernSpace (y:ys) | " " == y = fjernSpace ys
-                  | otherwise = y : fjernSpace ys
-
+draw :: Ast -> String -> String
+draw (Sum x y) indent = indent ++ ("Sum\n") ++ draw x fkdInd ++ "\n" ++ draw y fkdInd
+draw (Mult x y) indent = indent ++ ("Mult\n") ++ indent ++ draw x fkdInd ++ "\n" ++ indent ++ draw y fkdInd
+draw (Min x) indent = indent ++ ("Min\n") ++ indent ++ draw x fkdInd ++ "\n"
+draw (Tall x) indent = indent ++ ("Tall ") ++ show x
 
 viss :: Ast -> String
 
-viss ast = do
-    ts <- fjernSpace (tokStr ast)--makes string ready for
-    ul <- unlines [ts]    --Puts string back together but with \n in it
-    return (ul)
-
-
-
---tar inn Ast
---gjør om til String
---må ha \n for å få til forskjellige linjer, kanskje ANSI for å flytte ut
--- sammensmekking av evt fleire mindre strenger til the big boi
---Sender til vis som bruker putStr
+viss ast = draw ast ""
 
 
 vis :: Ast -> IO ()
