@@ -40,16 +40,22 @@ tokenize (xr:xs) t s | elem xr t = [xr] : tokenize xs t s
                     
 notin ls = \z -> not (elem z ls)
 
+tokStr s = tokenize (show s) "" "()"
+
+fjernSpace [] = []
+fjernSpace (y:ys) | " " == y = fjernSpace ys
+                  | otherwise = y : fjernSpace ys
 
 
 viss :: Ast -> String
 
 viss ast = do
-    streng <- show ast --Turns ast to String
-    tokenized <- tokenize streng "" "()" --tears String into list of strings
-    filth <- filter (not . null) tokenized --Removes empty string in list
-    ul <- unlines (tokenized)    --Puts string back together but with \n in it
+    ts <- fjernSpace (tokStr ast)--makes string ready for
+    ul <- unlines [ts]    --Puts string back together but with \n in it
     return (ul)
+
+
+
 --tar inn Ast
 --gjør om til String
 --må ha \n for å få til forskjellige linjer, kanskje ANSI for å flytte ut
