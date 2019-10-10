@@ -12,6 +12,7 @@ parse :: String -> Ast
 parse str = getFirst (parseExpr (tokenize str "+*-" " "))
 
 onlyDigits x = takeWhile isDigit x == x
+stringCheck x = takeWhile isLetter x == x
 
 parseExpr :: [String] -> (Ast, [String])
 
@@ -23,9 +24,13 @@ parseExpr ("*":rs) = let(e1, r1) = parseExpr rs ;
             
 parseExpr ("-":rs) = let(e1, r1) = parseExpr rs ; 
                         (e2, r2) = parseExpr r1 in (Min e1, r2)
+                    
 
-parseExpr (x:rs) = if (onlyDigits x) then (Tall (read x :: Int), rs)
-                        else error ("Syntaksfeil ved " ++ x)
+parseExpr (x:rs) = if (onlyDigits x)
+                     then (Tall (read x :: Int), rs)
+                    else if(stringCheck x)
+                        then(Var (read (show x) :: String), rs)
+                else error ("Syntaksfeil ved " ++ x)
 
 getFirst :: (a, b) -> a
 getFirst (a,b) = fst (a, b)
@@ -47,6 +52,7 @@ draw :: Ast -> String -> String
 draw (Sum x y) indent = indent ++ ("Sum\n") ++ draw x fkdInd ++ "\n" ++ draw y fkdInd
 draw (Mult x y) indent = indent ++ ("Mult\n") ++ indent ++ draw x fkdInd ++ "\n" ++ indent ++ draw y fkdInd
 draw (Min x) indent = indent ++ ("Min\n") ++ indent ++ draw x fkdInd ++ "\n"
+draw (Var x) indent = indent ++ ("Var ") ++ (read (show x))
 draw (Tall x) indent = indent ++ ("Tall ") ++ show x
 
 viss :: Ast -> String
@@ -75,8 +81,8 @@ evb :: Ast -> Bool
 
 evb str = folde' (oddCheck) (||) (&&) (not) str
 
-
-oddCheck q = rem (abs(q)) 2 == 1
+oddCheck :: Integral a => a -> Bool
+oddCheck q = odd q
 
 evix :: Ast -> Int -> Int
 
