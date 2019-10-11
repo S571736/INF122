@@ -36,7 +36,6 @@ getFirst :: (a, b) -> a
 getFirst (a,b) = fst (a, b)
 
 tokenize :: [Char] -> [Char] -> String ->  [String]
-   
 tokenize [] t s = []
 tokenize (xr:xs) t s | elem xr t = [xr] : tokenize xs t s
                     | elem xr s = tokenize xs t s
@@ -65,7 +64,7 @@ vis :: Ast -> IO ()
 vis ast = putStr (viss ast)
 
 
---folde' :: (Int -> t) -> (t -> t -> t) -> (t -> t -> t) -> (t -> t) -> Ast -> a -> t
+folde' :: (Int -> t) -> (t -> t -> t) -> (t -> t -> t) -> (t -> t) -> Ast -> Int -> t
 folde' t s mul min (Tall x) i = t x
 folde' t s mul min (Sum x y) i = s (folde' t s mul min x i) (folde' t s mul min y i)
 folde' t s mul min (Mult x y) i = mul (folde' t s mul min x i) (folde' t s mul min y i)
