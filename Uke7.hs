@@ -11,11 +11,11 @@ prettyPrint structure = putStr (pp structure)
 pp :: FileOrFolder -> String
 pp structure = draw structure ""
 
-ind = "  "
+indent = "  "
 draw :: FileOrFolder -> String -> String
 
-draw (Folder (x:xs)) indent = indent ++ "-Folder\n" ++ indent ++ draw x ind ++ "\n" ++ indent ++ indent ++ draw (head xs) ind
-draw File indent = "-File" 
+draw (Folder (x:xs)) ind = ind ++ "-Folder\n" ++ draw x indent ++ "\n" ++ ind ++ draw (head xs) indent
+draw File ind = ind ++ "-File" 
 draw _ _ = []
 
 
