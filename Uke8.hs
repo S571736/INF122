@@ -43,12 +43,17 @@ appL s eqs = map (appE s) eqs
 uni :: [(Ast, Ast)] -> [(Ast, Ast)] -> [(Ast, Ast)]
 uni ls [] = if ferdig ls then ls else uni [] ls
 uni ls ((N y ar, V x):rs) = uni ls ((V x, N y ar):re)
-uni ls ((V x, N y ar):rs) = if occFeil (V x) (N y ar) then error "Occurs check feil ved"++(visAst (V x))++ "og "++ (visAst (N y ar))
-                                                    else uni (appL ((V x, N y ar) ls) ++[(V x, N y ar)]) (appL (V x, N y ar) rs)
+uni ls ((V x, N y ar):rs) = if occFeil (V x) (N y ar)
+                            then error "Occurs check feil ved"++(visAst (V x))++ "og "++ (visAst (N y ar))
+                            else uni (appL ((V x, N y ar) ls) ++[(V x, N y ar)]) (appL (V x, N y ar) rs)
 
-uni ls (N y ax, N y ay):r = if x == y then 
+uni ls (N y ax, N y ay):r = if x == y then uni ls (rs++(zip ax ay))
                             else error "ulike funksjonsnavn"
 
+uni ls ((V x, V y):rs) = if x == y then uni ls ls
+                        else uni (appL ((V x, V y) ls) ++[(V x, V y)]) (appL (V x, V y) rs)
+
+occFeil = undefined
 
 visAst (V x) = x
 visAst (N f []) = f
