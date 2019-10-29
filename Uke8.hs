@@ -42,18 +42,27 @@ appL s eqs = map (appE s) eqs
 
 uni :: [(Ast, Ast)] -> [(Ast, Ast)] -> [(Ast, Ast)]
 uni ls [] = if ferdig ls then ls else uni [] ls
-uni ls ((N y ar, V x):rs) = uni ls ((V x, N y ar):re)
-uni ls ((V x, N y ar):rs) = if occFeil (V x) (N y ar)
-                            then error "Occurs check feil ved"++(visAst (V x))++ "og "++ (visAst (N y ar))
-                            else uni (appL ((V x, N y ar) ls) ++[(V x, N y ar)]) (appL (V x, N y ar) rs)
+uni ls ((N y ar, V x):rs) = uni ls ((V x, N y ar):rs)
+uni ls ((V x, N y ar):rs) = if occFeil (V x) (N y ar) then
+                                error ("Occurs check feil ved" ++ (visAst (V x))++ " og "++ (visAst (N y ar)))
+                            else uni ((appL (V x,N y ar) ls)++[(V x, N y ar)]) (appL (V x, N y ar) rs)
 
-uni ls (N y ax, N y ay):r = if x == y then uni ls (rs++(zip ax ay))
-                            else error "ulike funksjonsnavn"
+uni ls ((N x ax, N y ay):rs) = if x == y then uni ls (rs++(zip ax ay))
+                            else error ("ulike funksjonsnavn " ++x++ " og "++y)
 
-uni ls ((V x, V y):rs) = if x == y then uni ls ls
-                        else uni (appL ((V x, V y) ls) ++[(V x, V y)]) (appL (V x, V y) rs)
+uni ls ((V x, V y):rs) = if x == y then uni ls rs
+                        else uni ((appL (V x, V y) ls) ++[(V x, V y)]) (appL (V x, V y) rs)
 
-occFeil = undefined
+occFeil a b = isIn a b
+ferdig ls = (all (isVar.fst)ls) && ferd ls && ferd (reverse ls)
+ferd [] = True
+ferd (a:ls) = not (any (isIn2 (fst a)) ls) && ferd ls  
+isVar (V x) = True
+isVar z = False
+isIn (V x) (V y) = x==y
+isIn (V x) (N y ar) = any (isIn (V x)) ar
+
+isIn2 v (t1, t2) = isIn v t1 || isIn v t2
 
 visAst (V x) = x
 visAst (N f []) = f
