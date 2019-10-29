@@ -58,7 +58,7 @@ ferdig ls = (all (isVar.fst)ls) && ferd ls && ferd (reverse ls)
 ferd [] = True
 ferd (a:ls) = not (any (isIn2 (fst a)) ls) && ferd ls  
 isVar (V x) = True
-isVar z = False
+isVar z = False 
 isIn (V x) (V y) = x==y
 isIn (V x) (N y ar) = any (isIn (V x)) ar
 
