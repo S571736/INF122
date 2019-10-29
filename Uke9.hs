@@ -1,7 +1,7 @@
 data Tree = Leaf Int | Node Tree Tree
 
 blad (Leaf _) = 1
-blad (Node t1 t2) = blad t1 + t2
+blad (Node t1 t2) = (blad t1) + (blad t2)
 
 inode (Leaf _) = 0
 inode (Node t1 t2) = inode t1 + inode t2 + 1
