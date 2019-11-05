@@ -87,6 +87,9 @@ m2) mengde (x:xs) = if (elem x xs) then False else mengde xs
 r1) rep [] = []
 r2) rep (x:xs) = if (elem x xs) then rep xs else x:rep xs
 
+e1) elem x [] = False
+e2) elem x (y:xs) = x==y || elem x xs
+
 mengde (rep ls) = True
 
 Basis: ls = []
@@ -95,17 +98,44 @@ m (r []) =r1= m [] =m1= True
 Ind:
 IH: m (r xs) = True
 
-m (r (x:xs)) = ... True
-=(r2)= m (if (elem x xs) then rep xs else x:rep xs)
+m (r (x:xs)) = True
+=(r2)= m (if (elem x xs) then (rep xs) else x:rep xs)
 
 =if= if (elem x xs) then m(rep xs) else (x:rep xs)
 
-1) når elem x xs = True --naar?
+1)naar: når elem x xs = True ....  =m (rep xs) =IH= True
 da: m (r xs) = True
 IH!
 
-2) når (elem x xs) = False --naar?
-da: m(x: rep xs) = True
-m(x: rep xs) =m2= if (elem x (rep xs)) then False else m (rep xs)
+2) naar: når (elem x xs) = False 
+da: m(x: rep xs) =??= True
+=m2= if (elem x (rep xs)) then False else m (rep xs)
 
+(A) elem x xs = False => elem x (rep xs) = False
 
+... = m (rep xs) =IH= True
+
+(B) elem x xs = elem (rep xs)
+ved induksjon på listen xs:
+Basis: xs = []
+elem x [] = False = elem x [] =r1= elem x (rep [])
+
+IHb): elem x xs = elem x (rep xs)
+elem x (rep (y:xs)) =     ... =?= elem x (y:xs)
+=r2= elem x (if (elem y xs) then rep xs else y:rep xs)
+
+21) elem y xs = False: ... =if= elem x (y:rep xs) 
+=e2= x==y || elem x (rep xs)
+=IHb= x==y || eller x xs
+=e2= elem x (y:xs)
+
+22) elem y xs = True: ... 
+=if= elem x (rep xs)
+=IHb= elem x xs
+    
+=||=     False || elem x xs
+==    x==y || elem x xs
+=e2= elem x (y:xs)
+
+(x==y = True) : True =22= elem y xs = elem x xs =2= False
+x==y = False
