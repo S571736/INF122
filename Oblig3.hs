@@ -31,7 +31,18 @@ move board row num = [update r n | (r,n) <- zip [1..] board]
         where update r n = if r == row then n-num else n
 
 
+putRow :: Int -> Int -> IO ()
+putRow row num = do putStr (show row) 
+                    putStr  ": "
+                    putStr (concat (replicate num "*"))
 
+
+applyNtimes 1 f x = f x
+applyNtimes n f x = f (applyNtimes (n-1) f x)
+
+-- tanken: henter ut hver linje rekursivt
+putBoard :: Board -> IO ()
+putBoard board = take (length board) (cycle board)
 
 
 
