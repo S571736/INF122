@@ -95,7 +95,7 @@ ai board (x:xs) =
              ai board xs
 
 
---aic n (x:xs)
+--aic n (x:xs) forsøk på å begynne på algoritme for maskinen til chomp
 -- Hovedmetoden for å spille Nim
 spillN :: Board -> Int -> IO ()
 spillN brett spiller = 
@@ -104,10 +104,10 @@ spillN brett spiller =
            if finished brett then 
               do newline
                  if spiller == 1 then
-                    do putStr "Datamaskinen vant!\n"
-                       generiskSpill
-                 else 
                     do putStr "Du vant!\n"
+                       generiskSpill
+                 else -- Mulig kem som vinner burde byttes om på her eller på nim, var ikkje lett å forstå fra oppgaveteksten
+                    do putStr "Datamaskinen vant!\n"
                        generiskSpill
            else
               do newline
@@ -143,6 +143,7 @@ spillN brett spiller =
                             putStrLn "Ugyldig trekk"
                             spillN brett spiller
 
+-- Chomp sin hovedmetode
 spillC brett spiller =
         do newline
            putBoard brett 0
@@ -151,7 +152,7 @@ spillC brett spiller =
                  if spiller == 1 then
                     do putStr "Datamaskinen vant!"    
                        generiskSpill
-                 else
+                 else -- Mulig kem som vinner burde byttes om på her eller på nim, var ikkje lett å forstå fra oppgaveteksten
                     do putStr "Du vant! Gratulerer"
                        generiskSpill
            else 
@@ -174,7 +175,7 @@ spillC brett spiller =
                                              do newline
                                                 putStrLn "Ugyldig trekk"
                                                 spillC brett spiller
-                 else -- Maskinen sin tur                               
+                 else -- Maskinen sin tur, bruker bare nim sin algoritme, så funker ikkje heilt
                     do
                        let tuppel = ai brett brett
                        let row = fst (head tuppel)
@@ -193,8 +194,11 @@ spillC brett spiller =
 
 -- Kjører Nim for første gang
 nim x = spillN (initial (read x :: Int)) 1
+
+-- Kjører Chomp for første gang
 chomp x = spillC (initialc (read x :: Int)) 1
 
+-- Hjelpetekst
 hjelpN = putStrLn "r a = fjern a brikker fra rad r. Vinner den som tar siste brikke.\nTrykk på hvilken som helst knapp for å fortsette..."
 hjelpC = putStrLn ("r k = fjern ri =< r og ki >= k. Dette er i mangel på bedre ord ettersom " 
                    ++ "at eg har vert våken i snart 24 timer og jobbet med dette i et kjør som har så langt vart 8 timer og 44 min, klokka er nå 0744.\nTrykk på Hvilken som helst knapp for å fortsette...")
