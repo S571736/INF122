@@ -49,10 +49,6 @@ putRow row num = do putStr (show row)
                     putStrLn (concat (replicate num "* "))
 
 
-{- old possibly useful
-putBoard :: Board -> Char -> Int -> IO ()
-putBoard (x:xs) game n = if game == 'n' then putBoard' (x:xs) n 1 else putBoardc' (x:xs) n 1
--}
 
 putBoard (x:xs) n = do 
         putBoardS' (x:xs) 0
@@ -65,13 +61,6 @@ putBoardS' (x:xs) n = do
                         putRow (n+1) x
                         putBoardS' xs (n+1)                      
 
-{-
-putBoard' [] n b = putRow 0 0
-putBoard' (x:xs) n b = do 
-                        putRow b x
-                        putBoard' xs n (b+1)
--}
-
 {-???
 putBoardc' [] n b = putRow 0 0
 putBoardc' (x:xs) n b = do 
@@ -79,6 +68,31 @@ putBoardc' (x:xs) n b = do
                         putBoardc' xs n (b+1)
 -}
 
+antall x y = x - y
+
+--ai :: Board -> [a] -> a -> [a]
+
+ai board [] = []
+ai board (x:xs) = 
+       do
+          let target = foldr (^) 0 board
+          if target < x then do
+          --let num = x-target
+             if valid board x (x-target) then
+                return (x, (x-target))
+             else ai board xs   
+          else
+             ai board xs
+
+ {-      
+iterator [] = []
+iterator (x:xs) = 
+
+makeList x y = x ++ y
+
+rInt :: String -> Int
+rInt = read
+-}
 
 getDigit :: String -> IO Int
 getDigit prompt = do putStr prompt
@@ -87,7 +101,7 @@ getDigit prompt = do putStr prompt
                      if isDigit x then
                         return (digitToInt x)
                      else
-                        do putStrLn "ERRRRRRRRRRRROOOOOORRRR"
+                        do putStrLn ""
                            getDigit prompt
 
 spillN :: Board -> Int -> IO ()
@@ -105,19 +119,25 @@ spillN brett spiller =
                  putStr "Spiller "
                  putStrLn (show spiller)
                  if spiller == 1 then
-                    do 
-                       row <- getDigit "Legg inn radnummer: "
+                    do row <- getDigit "Legg inn radnummer: "
                        num <- getDigit "Stjerner som skal fjernes: "
-                 else 
-                        {-
-                        her kommer ai
-                        -}
-                 if valid brett row num then
-                    spillN (move brett row num) (next spiller)
+                       if valid brett row num then
+                          spillN (move brett row num) (next spiller)
+                       else
+                          do newline
+                             putStrLn "Ugyldig trekk"
+                             spillN brett spiller
                  else
-                 do newline
-                    putStrLn "Ugyldig trekk"
-                    spillN brett spiller
+                    do 
+                       let tuppel = ai brett brett
+                       let row = fst (head tuppel)
+                       let num = snd (head tuppel)
+                       if valid brett row num then
+                          spillN (move brett row num) (next spiller)
+                       else
+                         do newline
+                            putStrLn "Ugyldig trekk"
+                            spillN brett spiller
 
 
 
