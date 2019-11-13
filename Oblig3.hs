@@ -3,7 +3,7 @@ import Data.List
 -- Forklarer hva det gjør
 spill :: IO()
 spill = do
-    putStrLn ("Hva ønsker du å spille? \n" ++ "n x for nim \n" ++ "c x for chomp \n" ++ "q hvis du ønsker å avslutte")
+    putStrLn ("n(im) x / c(homp) / q(uit)")
     ord <- getLine
     let input = words ord
     if (null input) then return () else case (head input) of
@@ -23,6 +23,8 @@ type Board = [Int]
 initial :: Int -> Board
 initial x = [1..x]
 
+initialc x = replicate x x
+
 
 
 -- Sjekker at brettet er tomt for stjerner
@@ -32,6 +34,8 @@ finished = all (== 0)
 -- Sjekker at det er nok stjerner på brettet
 valid :: Board -> Int -> Int -> Bool
 valid board row num = board !! (row - 1) >= num
+
+validc board row col
 
 -- Gjør eit sick move
 move :: Board -> Int -> Int -> Board
@@ -70,39 +74,31 @@ putBoardc' (x:xs) n b = do
 
 antall x y = x - y
 
---ai :: Board -> [a] -> a -> [a]
 
-ai board [] = []
+ai :: Board -> [Int] -> [(Int, Int)]
+ai board [] = [(1,1)]
 ai board (x:xs) = 
        do
           let target = foldr (^) 0 board
+          let i = (length (x:xs))
           if target < x then do
           --let num = x-target
-             if valid board x (x-target) then
-                return (x, (x-target))
-             else ai board xs   
+             if valid board i (x-target) && (x-target) > 0 && i > 0 then
+                return (i, (x-target))
+             else [(i+1, (x-target+1))]   
           else
              ai board xs
 
- {-      
-iterator [] = []
-iterator (x:xs) = 
-
-makeList x y = x ++ y
-
-rInt :: String -> Int
-rInt = read
+{-
+getDigit :: String -> Char -> Int
+getDigit inn = do
+        let x = inn
+        if isDigit x then
+           return (digitToInt x)
+        else
+           do putStrLn ""
+              return x
 -}
-
-getDigit :: String -> IO Int
-getDigit prompt = do putStr prompt
-                     x <- getChar
-                     newline
-                     if isDigit x then
-                        return (digitToInt x)
-                     else
-                        do putStrLn ""
-                           getDigit prompt
 
 spillN :: Board -> Int -> IO ()
 spillN brett spiller = 
@@ -112,27 +108,36 @@ spillN brett spiller =
               do newline
                  if spiller == 1 then
                     do putStr "Datamaskinen vant!\n"
+                       spill
                  else 
                     do putStr "Du vant!\n"
+                       spill
            else
               do newline
                  putStr "Spiller "
                  putStrLn (show spiller)
-                 if spiller == 1 then
-                    do row <- getDigit "Legg inn radnummer: "
-                       num <- getDigit "Stjerner som skal fjernes: "
-                       if valid brett row num then
-                          spillN (move brett row num) (next spiller)
-                       else
-                          do newline
-                             putStrLn "Ugyldig trekk"
-                             spillN brett spiller
-                 else
+                 if spiller == 1 then --Spiller sin tur
+                    do putStrLn "r a / ? / q"
+                       inn <- getLine
+                       if (null inn) then spillN brett spiller else case (head inn) of
+                          'q' -> do spill
+                          '?' -> do hjelpN
+                          otherwise -> do let row = digitToInt (head inn)
+                                          let num = read (tail inn)::Int
+                                          if valid brett row num then
+                                             spillN (move brett row num) (next spiller)
+                                          else
+                                             do newline
+                                                putStrLn "Ugyldig trekk"
+                                                spillN brett spiller
+                 else --Maskinen sin tur
                     do 
                        let tuppel = ai brett brett
                        let row = fst (head tuppel)
                        let num = snd (head tuppel)
-                       if valid brett row num then
+                       putStr (show row)
+                       putStr (show num)
+                       if valid brett row num && num > 0 then
                           spillN (move brett row num) (next spiller)
                        else
                          do newline
@@ -140,6 +145,7 @@ spillN brett spiller =
                             spillN brett spiller
 
 
-
 nim x = spillN (initial (read x :: Int)) 1
 chomp x = undefined
+
+hjelpN = putStrLn "r a = fjern a brikker fra rad r. Vinner den som tar siste brikke."
