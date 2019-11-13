@@ -1,5 +1,7 @@
+-- Sondre Lindaas Gjesdal
 import Data.Char
 import Data.List
+
 -- Hovedmenyen
 generiskSpill :: IO()
 GeneriskSpill = do
