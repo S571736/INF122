@@ -4,7 +4,7 @@ import Data.List
 
 -- Hovedmenyen
 generiskSpill :: IO()
-GeneriskSpill = do
+generiskSpill = do
     putStrLn ("n(im) x / c(homp) x / q(uit)")
     ord <- getLine
     let input = words ord
@@ -92,7 +92,7 @@ ai board (x:xs) =
           --let num = x-target
              if valid board i (x-target) && (x-target) > 0 && i > 0 then
                 return (i, (x-target))
-             else [(i+1, (x-target+1))]   
+             else [((i+1), (x-target))]   --target+1? Dette er fuckupen når 2 1 står igjen gjør dataen 4 1
           else
              ai board xs
 
@@ -107,7 +107,7 @@ spillN brett spiller =
               do newline
                  if spiller == 1 then
                     do putStr "Du vant!\n"
-                       generiskSpill
+                       
                  else -- Mulig kem som vinner burde byttes om på her eller på nim, var ikkje lett å forstå fra oppgaveteksten
                     do putStr "Datamaskinen vant!\n"
                        generiskSpill
