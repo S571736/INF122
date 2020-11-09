@@ -23,8 +23,8 @@ parseExpr ("*":rs) = let(e1, r1) = parseExpr rs ;
                         (e2, r2) = parseExpr r1 in (Mult e1 e2, r2)
             
 parseExpr ("-":rs) = let(e1, r1) = parseExpr rs ; 
-                        (e2, r2) = parseExpr r1 in (Min e1, r2)
-                    
+                        (e2, r2) = parseExpr r1 in case 
+
 
 parseExpr (x:rs) = if (onlyDigits x)
                      then (Tall (read x :: Int), rs)

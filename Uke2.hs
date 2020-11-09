@@ -72,8 +72,20 @@ f4 x y = x
 f5 :: a -> b -> b
 f5 x y = y
 
+-- NB Bruk wildcard _ for variabler vi ikkje skal bry oss om
 -- F programmer to funksjoener
+{-
+som er slike at for alle x :: Int, y :: Int, har vi: f x y == g(x,y).
+(Int kan erstattes av vilkårlig Numerisk type, dvs., f :: Num t => t -> t -> t, og
+tilsvarende for g.)
+-}
 
---f :: Int -> Int -> Int
 
---g :: (Int, Int) -> Int
+f :: Int -> Int -> Int
+f x y = x + y
+
+
+g :: (Int, Int) -> Int
+
+g (x,y) = (fst (x,y)) + (snd (x,y))
+

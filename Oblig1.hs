@@ -1,124 +1,116 @@
-module Oblig1 where 
-    -- Sondre Lindaas Gjesdal
+-- a comment with your forename + surname and group
+-- Sondre Lindaas Gjesdal || Group 3
+module Oblig1 where
+import Data.Char
 
-{- A (a) Programmer funksjon fjern som fjerner fra strengen
-    i første argumentet tegnet i posisjonen gitt ved andre argumentet-}
-    
-    fjern :: String -> Int -> String
+data Ast
+    = Word String
+    | Num Int
+    | Mult Ast Ast
+    | Plus Ast Ast
+    | Minus Ast Ast
+    deriving (Eq, Show)
 
-    fjern str n = 
-        let s = take (n) str
-            e = drop (n+1) str
-            in s ++ e
+parse :: String -> Ast
+parse str = fst (parsePres (tokenize str))
 
-{- A. (b) Programmer funksjon fjernc som fjerner fra strengen i første 
-argumentet alle forekomster av tegnet i andre argumentet-}
-    fjernc :: String -> Char -> String
+-- Method for parsing normal presedence
+parsePres :: [String] -> (Ast, [String])
+parsePres (s) = let (a,z) = parseMult (s) in
+    if null z then (a,z)
+    else if head(z) == "+" then
+        let (c, rest) = parsePres(tail(z)) in (Plus a c, rest)
+    else if head(z) == "-" then
+        let (c, rest) = parsePres(tail(z)) in (Minus a c, rest)
+    else (a,z)
 
-    fjernc str c = filter(/=c) str
+-- Method called whenever multiplying to get right presedence
+parseMult :: [String] -> (Ast, [String])
+parseMult (s) = let (a,z) = parseNum (s) in 
+    if null z then (a,z)
+    else if isWord a then if head z == "*" then error "cannot multiply Term with something else"
+    else (a,z) 
+    else if head(z) == "*" then
+        let (c, rest) = parseMult(tail(z)) in (Mult a c, rest)
+    else (a,z)
 
+parseNum :: [String] -> (Ast, [String])
+parseNum (x:s)
+    | all isDigit x
+    = (Num (read x :: Int) , s)
+    | all isAlpha x
+    = (Word (read (show x) :: String), s)
+parseNum _ = error "Invalid expression, could not parse"
 
-{-A.(c) Programmer funksjon tegnpos som returnerer liste med alle 
-posisjonene i inputstrenger der tegnet gitt i andre argumentet forekommer-}
-    tegnpos :: String -> Char -> [Int]
+isWord :: Ast -> Bool
+isWord (Word w) = True
+isWord _ = False 
 
-    tegnpos str c = [y | (x, y) <- zip str [0..], x == c]
+isNum :: Ast -> Bool
+isNum (Num w) = True
+isNum _ = False 
 
-
-{-B.(a) Programmer funksjonen ord som deler inputstrengen opp i liste av strenger ved hver sekvens av mellomrom-}
-    ord :: String -> [String]
-    ord "" = []
-    ord str = 
-        let s  = takeWhile (/=' ') $ dropWhile (==' ') str
-            (_, rest) = splitAt (length s) str
-        in s : ord (dropWhile (==' ') rest)
-
-{-B.(b) Programmer funksjon tokenize
->tokenize str imp rem skal dele opp strengen str i en liste ac strenger der
-    - hvert tegn som forekommer i strengen imp skal stå som egen streng,
-    - hvert tegn som forekommer i strengen rem skal fjernes, mens
-    - tegn fra imp ++ rem brukes som skilletegn, dvs andre delstrenger av str 
-    i resultatlisten er de som forekommer mellom tegn fra imp ++ rem
-    Vi antar at ingen tegn forekommer i begge argumentlister imp og rem
-    > tokenize “aa b -c”   “”   “ ”  (den siste er strengen med enkelt blank, og nest siste en tom streng) skal gi
-        [“aa”, ”b”, ”-c”]
-    > tokenize “aa b -c”   “-”   “ ”   (den siste er strengen med enkelt blank) skal gi 
-        [“aa”, ”b”, ”-“, “c”]
-    > tokenize “a + b* 12–def”   “+*–”   “ “ (den siste er strengen med enkelt blank) skal gi 
-        [“a”, ”+”, ”b”, ”*”, ”12”, “–“, “def”]
-    > tokenize “a + b* 12–def”   “+*”   “ “ (den siste er strengen med enkelt blank) skal gi 
-        [“a”, ”+”, ”b”, ”*”, ”12–def”]-}
-
-
-    tokenize :: [Char] -> [Char] -> String ->  [String]
-   
-    tokenize _ _ "" = []
-    tokenize imp rem (x:str)
-        | x `elem` rem                  = rest
-        | x `elem` imp                  = [x]:rest
-        | ([i:_]) <- rest, i `elem` imp = [x]:rest
-        | (voksende:rest') <- rest      = (x:voksende):rest'
-        | otherwise                     = [x]:rest
-        where rest = tokenize imp rem str
-
+tokenize :: String -> [String]
+tokenize "" = []
+tokenize ('+':xs) = "+" : tokenize xs
+tokenize ('*':xs) = "*" : tokenize xs
+tokenize ('-':xs) = "-" : tokenize xs
+tokenize (x:xs)
+    | isDigit x
+    = takeWhile isDigit (x:xs) : tokenize (dropWhile isDigit (x:xs))
+    | isAlpha x
+    = takeWhile isAlpha (x:xs) : tokenize (dropWhile isAlpha (x:xs))
+    | isSpace x
+    = tokenize (dropWhile isSpace xs)
+    | otherwise
+    = error ("Could not tokenize unexpected token " ++ show x)
 
 
 
-{-C. I denne oppgaven betrakter vi lister som mengder, dvs. vi ser bort fra rekkefølgen og repetisjoner av elementer
-    - [1,3,1,2,1,3] og [3,2,1] betraktes som like-}
+indent s 0 = []
+indent s i = s ++ indent s (i - 1)
 
-    rmdup :: Eq a => [a] -> [a]
-    rmdup = rdHelp []
-        where rdHelp sett [] = sett
-              rdHelp sett (x:xs)
-                | x `elem` sett = rdHelp sett xs
-                |otherwise = rdHelp (sett ++ [x]) xs
+draw :: Ast -> Int -> String
+draw (Plus x y) i = ("Plus\n") ++ indent " " i ++ draw x (i + 3) ++ "\n" ++ indent " " i ++ draw y (i + 3)
+draw (Minus x y) i = ("Minus\n") ++ indent " " i ++ draw x (i + 3) ++ "\n" ++ indent " " i ++ draw y (i + 3) 
+draw (Mult x y) i = ("Mult\n") ++ indent " " i ++ draw x (i + 3) ++ "\n" ++ indent " " i ++ draw y (i + 3)
+draw (Word x) i = ("Word ") ++ (read (show x))
+draw (Num x) i = ("Num ") ++ show x
 
-{-    
-    qs [] = []
-    qs (x:xs) = (qs mindre) ++ [x] ++ (qs storre)
-        where 
-            storre = [ i | i <- xs, i >= x ]
-            mindre = [ i | i <- xs, i < x ]
-            
+viss :: Ast -> String
+viss ast = draw ast 3
 
-    --eqli :: Eq t => [t] -> [t] -> Bool
-    eqli l1 l2= do
-        let li1 = rmdup l1
-        let li2 = rmdup l2
-        let lis1  = qs li1
-        let lis2  = qs li2
-        lis1 == lis2
--}
+vis :: Ast -> IO ()
+vis ast = putStr (viss ast ++ "\n")
 
-    eqli :: Eq t => [t] -> [t] -> Bool
-    eqli [] [] = True   
-    eqli a b = eqli2 (rmdup a) (rmdup b)
-    
-    eqli2 a b = if length a /= length b then False else checker a b
+eval :: Ast -> String
+eval str = evalExpr str
 
-    checker a b = check [(x,y) | (x,y) <- zip a b, x <- a, y <- b, x == y]
+evalExpr :: Ast -> String 
+evalExpr (Word x) = x
+evalExpr (Num x) = show x
+evalExpr (Mult x y) = if isNum(x) 
+    then indent (evalExpr y) (toNum x) 
+    else error "first operator need to be Num to evaluate"
+evalExpr (Plus x y) = evalExpr x ++ evalExpr y
+evalExpr (Minus x y) = diff (evalExpr x) (evalExpr y)
+evalExpr _ = error "Could not evaluate your expression!"
 
-    check a = check2 [x == y|(x,y) <- a]
 
-    check2 a = if all (== True) a then True else False
-{-
-    remDoubles [] = []
-    remDoubles (x:xs) | x elem xs = remDoubles xs
-                      | otherwise = x : remDoubles xs
-    -}
-{-D. programmer funksjon sjekk som tar som input en streng med mulige parantesuttrykk, og sjekker om paranteser er riktig.
-    Er de det, returneres strengen "Korrekt", mens er det feil, returneres strengen "Feil".
-    Du kan først lage en løsning hvor kun paranteser ( og ) kan forekomme og, deretter, utvide den med parantespar [] og {}.
-    Paranteser må matches kun mot paranteser med samme type. f.eks skal strengen "({)}" avvises fordi innerste "{" har tilsvarende 
-    ")" istedenfor "}". Utenom paranteser, kan man ha vilkårlige tegn i strenger, f.eks skal "abc( de {a} jjjj)[x]" aksepteres.-}
+toString :: Ast -> String
+toString (Word x) = x
 
-    sjekk :: String -> String
-    sjekk xs = if testing xs then "Korrekt" else "False"
-    
-    
-    testing xs = head cumulated == 0 && all (>= 0) cumulated where
-        cumulated = scanr (+) 0 $ map depth xs
-        depth '(' = -1
-        depth ')' = 1
-        depth _ = 0
+
+toNum :: Ast -> Int
+toNum (Num x) = x
+
+
+rem1 :: Eq a => [a] -> a -> [a]
+rem1 [] _ = []
+rem1 (x:xs) y = if x == y then xs else x : rem1 xs y
+
+
+diff :: Eq a => [a] -> [a] -> [a]
+diff [] _ = []
+diff x [] = x
+diff (x:xs) (y:ys) = diff (rem1 (x:xs) y) ys

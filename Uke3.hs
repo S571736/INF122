@@ -1,86 +1,57 @@
--- Uke 3
 -- A
---print(4.3)
---a
-safetail :: [a] -> [a]
-safetail xs = if null xs then xs else tail xs
+--4.5 Without using any other library function or operators, show how the meaning of the following pattern matching definition for logical conjunction && can be formalised using conditional expressions
+{-
+True && True = True
+_ && _ = False
+-}
 
---b
-safetail' :: [a] -> [a]
-safetail' xs | null xs = []
-            | otherwise = tail xs
-
---c
-
-safetail'' :: [a] -> [a]
-safetail'' [] = []
-safetail'' xs = tail xs
-
---4.4
-(||) :: Bool -> Bool -> Bool
-True || True = True
-True || False = True
-False || True = True
-False || False = False
-
-(|||) :: Bool -> Bool -> Bool
-False ||| False = False
-_ ||| _ = True
-
-(||||) :: Bool -> Bool -> Bool
-False |||| b = b
-True |||| _ = True
-
-(|||||) :: Bool -> Bool -> Bool
-b ||||| c | b == c = b
-            | otherwise = True
-
---4.5
 (&&) :: Bool -> Bool -> Bool
-a && b = if a == True then
+a && b = if a == True then 
             if b == True then True else False
-        else False
-
---4.6
-(&&&) :: Bool -> Bool -> Bool
-a &&& b = if a == True then b else False
+         else False
 
 --4.7
 mult :: Int -> Int -> Int -> Int
-mult  = \x -> (\y -> (\z -> x * y * z))
+
+mult = \x -> (\y -> (\z -> x * y * z))
+
+
 -- B
-f :: Int -> Int
-f 0 = 0
-f x = x^2 + f (x-1)
+--5.6 
+factors :: Int -> [Int]
+factors n = [x | x <- [1..n], n `mod` x == 0]
 
 
-f1 x = sum[x^2 | x <- [1..x]]
+perfect x = sum(factors x) == 2 * x
 
-f2 x = (\x -> x^2 + f (x-1)) x
+perfects :: Int -> [Int]
+perfects n = [x | x <- [1..n], perfect x]
 
--- C
-toList :: Int -> [Int]
-toList 0 = []
-toList x = toList(x `div` 10) ++ [x `mod` 10]
 
---D
-ab :: String -> Bool
+--5.7
 
-ab st = ok st []
-ok [] [] = True
-ok [] as = False
-ok ('a':xs) as = ok xs ('a':as)
-ok ('b':xs) [] = False
-ok ('b':xs) (a:as) = ok xs as
-ok (x:xs) as = ok xs as
+compre = concat [[(x,y) | y <- [3,4]] | x <- [1,2]]
 
---E
---5.2
-grid :: Int -> Int -> [(Int, Int)]
-grid m n = [(x, y) | x <- [0..m], y <- [0..n]]
---5.3
-square :: Int -> [(Int, Int)]
-square n = [(x,y) | (x,y) <- grid n n, x /= y]
---5.4
-replicate' :: Int -> a -> [a]
-replicate' x y = [ y | _ <- [1..x]]
+
+--5.9
+
+scalarproduct :: [Int] -> [Int] -> Int
+scalarproduct xs ys = sum [x*y | (x,y) <- zip xs ys]
+
+--C Programmer funksjonen rem1 som fjerner første forekomsten av et element, gitt i andre argumentet, fra listen gitt som det første argumentet
+rem1 :: Eq a => [a] -> a -> [a]
+rem1 [] _ = []
+rem1 (x:xs) y = if x == y then xs else x : rem1 xs y
+
+
+
+rem2 :: Eq a => [a] -> a -> [a]
+rem2 [] _ = []
+rem2 (x:xs) a = if x == a then xs else x : (rem1 xs a)
+
+
+--D Programmer funksjonen diff slik at diff as bs fjerner første forekomsten av første elementet i bs fra as, deretter første forekomsten av andre elementet i bs fra as osv
+diff :: Eq a => [a] -> [a] -> [a]
+diff [] _ = []
+diff x [] = x
+diff (x:xs) (y:ys) = diff (rem1 (x:xs) y) ys
