@@ -1,11 +1,12 @@
 -- Lage "main" metode å referere til fra den ekte main så man kan få med nødvendig data
---
+-- Oppdatere matrise og brett skikkelig så de følger med
+-- Oppdatere brettet uten å cleare heile brettet
 
 import Data.List
 
 menu :: Matrise -> Brett -> IO ()
 menu matrise brett = do
-  visBrett matrise
+  
   putStrLn $ show brett
   putStrLn ("Vennligst skriv en kommando")
   ord <- getLine
@@ -29,29 +30,39 @@ menu matrise brett = do
 
 c n = do
   let m = nyMatrise n
+  visBrett m
   menu m []
 
 n :: [Int] -> [[Char]] -> Brett -> IO ()
 n (x : xx : xs) m brett = do
   if ((length (x : xx : xs)) `mod` 2 == 0)
     then do
-      let matrise = updateMat (x -1, xx -1) m 'O'
+      let matrise = updateMat (x, xx) m 'O'
+      goto ((x*3+1), xx+1)
+      putStr "O"
+      goto (0, (length matrise + 2))
+      putStrLn "\ESC[0J"
       if (xs /= [])
         then do
           n xs matrise brett
           return ()
-        else menu matrise brett
+        else do
+          let nyttBrett = matrisetilBrett matrise
+          menu matrise nyttBrett
     else error "List is not even, list needs to be even to work"
 
 e :: [Int] -> [[Char]] -> Brett -> IO ()
 e (x : xx : xs) m brett = do
   if ((length (x : xx : xs)) `mod` 2 == 0)
     then do
-      let matrise = updateMat (x -1, xx -1) m '.'
+      let matrise = updateMat (x, xx) m '.'
       if (xs /= [])
         then do
           n xs matrise brett
-        else menu matrise brett
+          return ()
+        else do
+          let nyttBrett = matrisetilBrett matrise
+          menu matrise nyttBrett
     else error "List is not even, list needs to be even to work"
 
 b m n = undefined
@@ -66,7 +77,9 @@ r name = undefined
 
 l x = undefined
 
-quit = return ()
+quit = do
+  clr
+  return ()
 
 -- HJELPEFUNKSJONER --
 
@@ -108,13 +121,13 @@ makeSpace (x : xs) = x : ' ' : ' ' : makeSpace xs
 
 
 matrisetilBrett :: Matrise -> Brett
-matrisetilBrett matrise  = [(x, y) | x <- [0 .. length matrise -1], y <- [0 .. length matrise -1], matrise !! x !! y /= '.']
+matrisetilBrett matrise  = [(x, y) | x <- [0 .. length matrise], y <- [0 .. length matrise], matrise !! x !! y /= '.']
 
 brettTilMatrise :: Matrise -> Brett -> Matrise
 brettTilMatrise matrise [] = []
 brettTilMatrise matrise (b:bs) = brettTilMatrise (updateMat b matrise 'O') bs
 
-nyMatrise n = [['.' | a <- [1 .. n]] | b <- [1 .. n]]
+nyMatrise n = [['.' | a <- [0 .. n-1]] | b <- [0 .. n-1]]
 
 goto (x, y) = putStr ("\ESC[" ++ show y ++ ";" ++ show x ++ "H")
 
