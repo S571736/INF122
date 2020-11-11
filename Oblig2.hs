@@ -1,11 +1,12 @@
 -- Lage "main" metode å referere til fra den ekte main så man kan få med nødvendig data
--- 
+--
 
 import Data.List
 
 menu :: Matrise -> Brett -> IO ()
 menu matrise brett = do
-  brett matrise
+  visBrett matrise
+  putStrLn $ show brett
   putStrLn ("Vennligst skriv en kommando")
   ord <- getLine
   let input = words ord
@@ -26,16 +27,15 @@ menu matrise brett = do
   putStrLn "\ESC[0J"
   return ()
 
-c n = do 
+c n = do
   let m = nyMatrise n
   menu m []
-
 
 n :: [Int] -> [[Char]] -> Brett -> IO ()
 n (x : xx : xs) m brett = do
   if ((length (x : xx : xs)) `mod` 2 == 0)
     then do
-      let matrise = updateMat (x, xx) m 'O'
+      let matrise = updateMat (x -1, xx -1) m 'O'
       if (xs /= [])
         then do
           n xs matrise brett
@@ -43,16 +43,15 @@ n (x : xx : xs) m brett = do
         else menu matrise brett
     else error "List is not even, list needs to be even to work"
 
-
 e :: [Int] -> [[Char]] -> Brett -> IO ()
 e (x : xx : xs) m brett = do
   if ((length (x : xx : xs)) `mod` 2 == 0)
     then do
-      let matrise = updateMat (x, xx) m '.'
+      let matrise = updateMat (x -1, xx -1) m '.'
       if (xs /= [])
         then do
           n xs matrise brett
-          else menu matrise brett
+        else menu matrise brett
     else error "List is not even, list needs to be even to work"
 
 b m n = undefined
@@ -77,10 +76,10 @@ type Pos = (Int, Int) -- Posisjon
 
 type Brett = [Pos] -- Liste med alle levende posisjoner
 
-brett :: [[Char]] -> IO ()
-brett [[]] = putStrLn ""
-brett [] = putStrLn ""
-brett m = do
+visBrett :: Matrise -> IO ()
+visBrett [[]] = putStrLn ""
+visBrett [] = putStrLn ""
+visBrett m = do
   let n = length m
   clr
   putStr "   "
@@ -88,23 +87,34 @@ brett m = do
   printK (map show [1 .. n])
   lagBrett [1 .. n] m
 
-
+lagBrett :: (Show a, Ord a, Num a) => [a] -> [[Char]] -> IO ()
 lagBrett [] _ = return ()
-lagBrett (x : xs) (y:ys) = do
+lagBrett (x : xs) (y : ys) = do
   lagLinje x (y)
   lagBrett xs (ys)
 
 
+lagLinje :: (Show a, Ord a, Num a) => a -> [Char] -> IO ()
 lagLinje rad x = do
   goto ((if rad > 9 then (lft - 2) else lft - 1, 1 + rad))
   putStr (show rad)
   putStr " "
-  putStrLn $ id $ intersperse ' ' $ intersperse ' ' x
-  
-  
+  putStrLn $ makeSpace x
+
+makeSpace :: [Char] -> [Char]
+makeSpace [] = []
+makeSpace [x] = [x]
+makeSpace (x : xs) = x : ' ' : ' ' : makeSpace xs
 
 
-nyMatrise n = [['.' | a <- [1..n]]| b <- [1..n]]
+matrisetilBrett :: Matrise -> Brett
+matrisetilBrett matrise  = [(x, y) | x <- [0 .. length matrise -1], y <- [0 .. length matrise -1], matrise !! x !! y /= '.']
+
+brettTilMatrise :: Matrise -> Brett -> Matrise
+brettTilMatrise matrise [] = []
+brettTilMatrise matrise (b:bs) = brettTilMatrise (updateMat b matrise 'O') bs
+
+nyMatrise n = [['.' | a <- [1 .. n]] | b <- [1 .. n]]
 
 goto (x, y) = putStr ("\ESC[" ++ show y ++ ";" ++ show x ++ "H")
 
